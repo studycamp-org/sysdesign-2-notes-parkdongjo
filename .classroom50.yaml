@@ -1,0 +1,12 @@
+schema: "classroom50/repo-config/v1"
+classroom: "sysdesign-2"
+assignment: "notes"
+owner:
+  username: "ParkDongJo"
+  id: 16081624
+  accepted_at: "2026-10-25T00:43:55Z"
+source:
+  owner: "studycamp-org"
+  owner_id: 122613267
+  repo: "sysdesign-2-template"
+  branch: "main"
