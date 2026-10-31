@@ -34,9 +34,15 @@ jobs:
           fi
           CHAPTERS=$(git diff --name-only "$BEFORE" "$AFTER" -- 'ch*/정리.md' | cut -d/ -f1 | sort -u)
           for ch in $CHAPTERS; do
-            # base: 최초 제출 직전 커밋에 1회 고정 (답안 diff만 깨끗하게 보이도록)
+            # base: 정리.md가 처음 추가된 커밋의 부모에 1회 고정
+            # (답안을 미리 push해 둔 경우에도 PR diff에 답안 전체가 보이도록)
             if ! git ls-remote --exit-code origin "refs/heads/${ch}-base" >/dev/null 2>&1; then
-              git push origin "$BEFORE:refs/heads/${ch}-base"
+              ADD_COMMIT=$(git log --diff-filter=A --format=%H -1 "$AFTER" -- "${ch}/정리.md" || true)
+              BASE_SHA=$BEFORE
+              if [ -n "$ADD_COMMIT" ] && git rev-parse -q --verify "${ADD_COMMIT}^" >/dev/null; then
+                BASE_SHA="${ADD_COMMIT}^"
+              fi
+              git push origin "$(git rev-parse "$BASE_SHA"):refs/heads/${ch}-base"
             fi
             git fetch origin "${ch}-base"
             git checkout -B "${ch}-answer" "origin/${ch}-base"
