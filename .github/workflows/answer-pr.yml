@@ -8,7 +8,7 @@ name: answer-pr
 on:
   push:
     branches: [main]
-    paths: ['ch*/정리.md', 'ch*/미팅과제.md']
+    paths: ['ch*/미팅과제.md']
 permissions:
   contents: write
   pull-requests: write
@@ -35,12 +35,11 @@ jobs:
           if [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
             BEFORE=$(git rev-parse "$AFTER^" 2>/dev/null || echo "$AFTER")
           fi
-          CHAPTERS=$(git -c core.quotePath=false diff --name-only "$BEFORE" "$AFTER" -- 'ch*/정리.md' 'ch*/미팅과제.md' | cut -d/ -f1 | sort -u)
+          CHAPTERS=$(git -c core.quotePath=false diff --name-only "$BEFORE" "$AFTER" -- 'ch*/미팅과제.md' | cut -d/ -f1 | sort -u)
           echo "chapters: $CHAPTERS"
           for ch in $CHAPTERS; do
             # 답안 이전 시점(정리.md가 처음 추가된 커밋의 부모)을 base 내용으로 사용
-            ADD_COMMIT=$(git -c core.quotePath=false log --diff-filter=A --format=%H -1 "$AFTER" -- "${ch}/정리.md" || true)
-            [ -z "$ADD_COMMIT" ] && ADD_COMMIT=$(git -c core.quotePath=false log --diff-filter=A --format=%H -1 "$AFTER" -- "${ch}/미팅과제.md" || true)
+            ADD_COMMIT=$(git -c core.quotePath=false log --diff-filter=A --format=%H -1 "$AFTER" -- "${ch}/미팅과제.md" || true)
             echo "add commit for ${ch}: ${ADD_COMMIT:-none}"
             BASE_SRC=$BEFORE
             if [ -n "$ADD_COMMIT" ] && git rev-parse -q --verify "${ADD_COMMIT}^" >/dev/null; then
